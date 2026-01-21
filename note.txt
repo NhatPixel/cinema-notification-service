@@ -1,0 +1,79 @@
+# --- Các lệnh PowerShell ---
+
+# Lệnh tạo cấu trúc thư mục
+$serviceName = "your-service-name"
+# Create root
+New-Item -ItemType Directory -Name $serviceName
+Set-Location $serviceName
+# Create folders
+New-Item -ItemType Directory -Path `
+cmd/server, `
+config, `
+internal/handler, `
+internal/model, `
+internal/repository, `
+internal/service, `
+internal/provider
+# Create files
+New-Item -ItemType File -Path `
+cmd/server/main.go, `
+config/database.go, `
+.env, `
+.gitignore, `
+note.txt, `
+README.md
+
+# --- Các lệnh SQL ---
+
+# SQL tạo bảng
+CREATE TABLE notifications (
+    id CHAR(36) NOT NULL,
+    user_id VARCHAR(50) NOT NULL,
+    title VARCHAR(255),
+    content TEXT,
+    is_read BOOLEAN DEFAULT FALSE,
+    expires_at DATETIME NULL,
+    PRIMARY KEY (id),
+    INDEX idx_user_id (user_id)
+);
+
+# --- URL & Sample Body để test bằng Postman ---
+
+# Lắng nghe thông báo (SSE)
+Method: GET
+URL: http://localhost:8080/notifications/stream?user_id=user-123
+(giữ kết nối, sẽ nhận event khi có thông báo mới)
+
+# Tạo 1 thông báo (single)
+Method: POST
+URL: http://localhost:8080/notifications
+Body (JSON):
+{
+  "user_id": "user-123",
+  "title": "Khuyến mãi",
+  "content": "Giảm 50% vé xem phim cuối tuần",
+  "is_read": false
+}
+
+# Tạo nhiều thông báo (bulk)
+Method: POST
+URL: http://localhost:8080/notifications/bulk
+Body (JSON):
+[
+  {
+    "user_id": "user-123",
+    "title": "Ưu đãi A",
+    "content": "Nội dung A",
+    "is_read": false
+  },
+  {
+    "user_id": "user-456",
+    "title": "Ưu đãi B",
+    "content": "Nội dung B",
+    "is_read": false
+  }
+]
+
+# Đánh dấu đã đọc theo ID
+Method: PUT
+URL: http://localhost:8080/notifications/{id}/read

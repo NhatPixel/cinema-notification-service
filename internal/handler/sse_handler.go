@@ -23,8 +23,11 @@ func (h *SSEHandler) Stream(c *gin.Context) {
 		return
 	}
 
-	ch := h.service.Subscribe(userID)
-	defer h.service.Unsubscribe(userID, ch)
+	notifications, err := h.service.FindByUserID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get notifications"})
+		return
+	}
 
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	c.Writer.Header().Set("Cache-Control", "no-cache")
@@ -35,6 +38,14 @@ func (h *SSEHandler) Stream(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get flusher"})
 		return
 	}
+
+	for _, n := range notifications {
+		c.SSEvent("notification", n)
+		flusher.Flush()
+	}
+
+	ch := h.service.Subscribe(userID)
+	defer h.service.Unsubscribe(userID, ch)
 
 	for {
 		select {

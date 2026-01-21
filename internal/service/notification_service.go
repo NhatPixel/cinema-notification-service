@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/NhatPixel/cinema-notification-service/internal/model"
@@ -49,11 +50,34 @@ func (s *NotificationService) Unsubscribe(userID string, ch chan model.Notificat
 	}
 }
 
-func (s *NotificationService) Notify(n model.Notification) error {
+func (s *NotificationService) Create(n model.Notification) error {
 	if err := s.repo.Create(&n); err != nil {
 		return err
 	}
 
+	s.broadcast(n)
+
+	return nil
+}
+
+func (s *NotificationService) CreateForUsers(ns []model.Notification) error {
+	var errs []error
+
+	for _, n := range ns {
+		if err := s.repo.Create(&n); err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		s.broadcast(n)
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("some notifications failed to insert: %v", errs)
+	}
+	return nil
+}
+
+func (s *NotificationService) broadcast(n model.Notification) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -63,7 +87,13 @@ func (s *NotificationService) Notify(n model.Notification) error {
 		default:
 		}
 	}
-
-	return nil
 }
 
+
+func (s *NotificationService) FindByUserID(userID string) ([]model.Notification, error) {
+	return s.repo.FindByUserID(userID)
+}
+
+func (s *NotificationService) UpdateReadStatus(id string) error {
+	return s.repo.UpdateReadStatus(id)
+}

@@ -24,10 +24,40 @@ func (h *NotificationHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.Notify(n); err != nil {
+	if err := h.service.Create(n); err != nil {
 		c.JSON(500, gin.H{"error": "failed to create notification"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "sent"})
+}
+
+func (h *NotificationHandler) CreateForUsers(c *gin.Context) {
+	var notifications []model.Notification
+	if err := c.ShouldBindJSON(&notifications); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.service.CreateForUsers(notifications); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create notifications"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "sent"})
+}
+
+func (h *NotificationHandler) UpdateReadStatus(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+
+	if err := h.service.UpdateReadStatus(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mark as read"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "read"})
 }
