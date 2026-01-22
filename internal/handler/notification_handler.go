@@ -6,7 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	
 	"github.com/NhatPixel/cinema-notification-service/internal/service"
-	"github.com/NhatPixel/cinema-notification-service/internal/model"
+	"github.com/NhatPixel/cinema-notification-service/internal/dto"
+	"github.com/NhatPixel/cinema-notification-service/internal/validation"
 )
 
 type NotificationHandler struct {
@@ -18,13 +19,13 @@ func NewNotificationHandler(s *service.NotificationService) *NotificationHandler
 }
 
 func (h *NotificationHandler) Create(c *gin.Context) {
-	var n model.Notification
-	if err := c.ShouldBindJSON(&n); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var req dto.CreateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validation.TranslateValidationError(err).Error()})
 		return
 	}
 
-	if err := h.service.Create(n); err != nil {
+	if err := h.service.Create(req); err != nil {
 		c.JSON(500, gin.H{"error": "failed to create notification"})
 		return
 	}
@@ -33,13 +34,13 @@ func (h *NotificationHandler) Create(c *gin.Context) {
 }
 
 func (h *NotificationHandler) CreateForUsers(c *gin.Context) {
-	var notifications []model.Notification
-	if err := c.ShouldBindJSON(&notifications); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var reqs []dto.CreateRequest
+	if err := c.ShouldBindJSON(&reqs); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validation.TranslateValidationError(err).Error()})
 		return
 	}
 
-	if err := h.service.CreateForUsers(notifications); err != nil {
+	if err := h.service.CreateForUsers(reqs); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create notifications"})
 		return
 	}

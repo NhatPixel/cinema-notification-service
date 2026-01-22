@@ -10,6 +10,7 @@ New-Item -ItemType Directory -Path `
 cmd/server, `
 config, `
 internal/handler, `
+internal/dto, `
 internal/model, `
 internal/repository, `
 internal/service, `
@@ -76,4 +77,10 @@ Body (JSON):
 
 # Đánh dấu đã đọc theo ID
 Method: PUT
-URL: http://localhost:8080/notifications/{id}/read
+URL: http://localhost:8080/notifications/user-123/read
+
+# --- Build bằng Render ---
+
+Web Service 
+Build Command: go build -o app ./cmd/server
+https://cinema-notification-service.onrender.com

@@ -6,6 +6,7 @@ import (
 
 	"github.com/NhatPixel/cinema-notification-service/internal/model"
 	"github.com/NhatPixel/cinema-notification-service/internal/repository"
+	"github.com/NhatPixel/cinema-notification-service/internal/dto"
 )
 
 type NotificationService struct {
@@ -50,7 +51,9 @@ func (s *NotificationService) Unsubscribe(userID string, ch chan model.Notificat
 	}
 }
 
-func (s *NotificationService) Create(n model.Notification) error {
+func (s *NotificationService) Create(req dto.CreateRequest) error {
+	n := req.ToModel()
+	n.IsRead = false
 	if err := s.repo.Create(&n); err != nil {
 		return err
 	}
@@ -60,10 +63,12 @@ func (s *NotificationService) Create(n model.Notification) error {
 	return nil
 }
 
-func (s *NotificationService) CreateForUsers(ns []model.Notification) error {
+func (s *NotificationService) CreateForUsers(reqs []dto.CreateRequest) error {
 	var errs []error
 
-	for _, n := range ns {
+	for _, req := range reqs {
+		n := req.ToModel()
+		n.IsRead = false
 		if err := s.repo.Create(&n); err != nil {
 			errs = append(errs, err)
 			continue
@@ -72,7 +77,7 @@ func (s *NotificationService) CreateForUsers(ns []model.Notification) error {
 	}
 
 	if len(errs) > 0 {
-		return fmt.Errorf("some notifications failed to insert: %v", errs)
+		return fmt.Errorf("failed to create %d notifications", len(errs))
 	}
 	return nil
 }
