@@ -19,13 +19,13 @@ func NewSSEHandler(s *service.NotificationService) *SSEHandler {
 func (h *SSEHandler) Stream(c *gin.Context) {
 	userID := c.Query("user_id")
 	if userID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Thiếu mã người dùng!"})
 		return
 	}
 
 	notifications, err := h.service.FindByUserID(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get notifications"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Tải thông báo thất bại!"})
 		return
 	}
 
@@ -35,7 +35,7 @@ func (h *SSEHandler) Stream(c *gin.Context) {
 
 	flusher, ok := c.Writer.(http.Flusher)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get flusher"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Tải flusher thất bại!"})
 		return
 	}
 

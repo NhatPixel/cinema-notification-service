@@ -2,8 +2,6 @@ package repository
 
 import (
 	"database/sql"
-
-	"github.com/google/uuid"
 	
 	"github.com/NhatPixel/cinema-notification-service/internal/model"
 )
@@ -17,8 +15,6 @@ func NewNotificationRepo(db *sql.DB) *NotificationRepository {
 }
 
 func (r *NotificationRepository) Create(n *model.Notification) error {
-	n.ID = uuid.NewString()
-
 	query := `
 		INSERT INTO notifications (id, user_id, title, content, is_read, expires_at)
 		VALUES (?, ?, ?, ?, ?, ?)

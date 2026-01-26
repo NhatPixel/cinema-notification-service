@@ -12,6 +12,8 @@ config, `
 internal/handler, `
 internal/dto, `
 internal/model, `
+internal/validation, `
+internal/validator, `
 internal/repository, `
 internal/service, `
 internal/provider

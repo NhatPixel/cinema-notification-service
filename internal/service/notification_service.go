@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/uuid"
+
 	"github.com/NhatPixel/cinema-notification-service/internal/model"
 	"github.com/NhatPixel/cinema-notification-service/internal/repository"
 	"github.com/NhatPixel/cinema-notification-service/internal/dto"
@@ -54,6 +56,7 @@ func (s *NotificationService) Unsubscribe(userID string, ch chan model.Notificat
 func (s *NotificationService) Create(req dto.CreateRequest) error {
 	n := req.ToModel()
 	n.IsRead = false
+	n.ID = uuid.Must(uuid.NewV7()).String()
 	if err := s.repo.Create(&n); err != nil {
 		return err
 	}
@@ -69,6 +72,7 @@ func (s *NotificationService) CreateForUsers(reqs []dto.CreateRequest) error {
 	for _, req := range reqs {
 		n := req.ToModel()
 		n.IsRead = false
+		n.ID = uuid.NewString()
 		if err := s.repo.Create(&n); err != nil {
 			errs = append(errs, err)
 			continue

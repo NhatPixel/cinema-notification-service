@@ -26,7 +26,7 @@ func (h *NotificationHandler) Create(c *gin.Context) {
 	}
 
 	if err := h.service.Create(req); err != nil {
-		c.JSON(500, gin.H{"error": "failed to create notification"})
+		c.JSON(500, gin.H{"error": "Tạo thông báo thất bại!"})
 		return
 	}
 
@@ -41,22 +41,22 @@ func (h *NotificationHandler) CreateForUsers(c *gin.Context) {
 	}
 
 	if err := h.service.CreateForUsers(reqs); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create notifications"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Tạo thông báo thất bại!"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "sent"})
+	c.JSON(http.StatusOK, gin.H{"status": "Tạo thông báo thành công."})
 }
 
 func (h *NotificationHandler) UpdateReadStatus(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Thiếu mã thông báo!"})
 		return
 	}
 
 	if err := h.service.UpdateReadStatus(id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mark as read"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Đọc thông báo thất bại!"})
 		return
 	}
 

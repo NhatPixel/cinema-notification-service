@@ -18,20 +18,20 @@ func TranslateValidationError(err error) error {
 		case "Title":
 			switch fe.Tag() {
 			case "required":
-				return fmt.Errorf("title không được để trống")
+				return fmt.Errorf("Tiêu đề không được để trống!")
 			case "min":
-				return fmt.Errorf("title phải có ít nhất %s ký tự", fe.Param())
+				return fmt.Errorf("Tiêu đề phải có ít nhất %s ký tự!", fe.Param())
 			case "max":
-				return fmt.Errorf("title không được vượt quá %s ký tự", fe.Param())
+				return fmt.Errorf("Tiêu đề không được vượt quá %s ký tự!", fe.Param())
 			}
 
 		case "ExpiresAt":
 			switch fe.Tag() {
 			case "future":
-				return fmt.Errorf("expires_at phải là thời gian trong tương lai")
+				return fmt.Errorf("Thời gian hết hạn phải là thời gian trong tương lai!")
 			}
 		}
 	}
 
-	return fmt.Errorf("dữ liệu không hợp lệ")
+	return fmt.Errorf("Dữ liệu không hợp lệ!")
 }
