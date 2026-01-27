@@ -41,7 +41,7 @@ func (s *NotificationService) Unsubscribe(userID string, ch chan model.Notificat
 	chs := s.clients[userID]
 	for i, c := range chs {
 		if c == ch {
-			s.clients[userID] = append(chs[:i], chs[i+1:]...)
+			chs = append(chs[:i], chs[i+1:]...)
 			break
 		}
 	}
