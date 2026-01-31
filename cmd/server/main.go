@@ -38,7 +38,7 @@ func main() {
 	r.GET("/notifications/stream", sseHandler.Stream)
 	r.POST("/notifications", notificationHandler.Create)
 	r.POST("/notifications/bulk", notificationHandler.CreateForUsers)
-	r.PUT("/notifications/:id/read", notificationHandler.UpdateReadStatus)
+	r.PATCH("/notifications/:id/read", notificationHandler.UpdateReadStatus)
 
 	r.Run(":8080")
 }
