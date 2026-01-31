@@ -81,7 +81,7 @@ func (s *NotificationService) CreateForUsers(reqs []dto.CreateRequest) error {
 	}
 
 	if len(errs) > 0 {
-		return fmt.Errorf("failed to create %d notifications", len(errs))
+		return fmt.Errorf("Có %d thông báo tạo thất bại!", len(errs))
 	}
 	return nil
 }
