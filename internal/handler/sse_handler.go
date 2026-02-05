@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/NhatPixel/cinema-notification-service/internal/dto"
 	"github.com/NhatPixel/cinema-notification-service/internal/service"
 )
 
@@ -40,7 +41,9 @@ func (h *SSEHandler) Stream(c *gin.Context) {
 	}
 
 	for _, n := range notifications {
-		c.SSEvent("notification", n)
+		var resp dto.SSEResponse
+		resp.FromModel(n)
+		c.SSEvent("notification", resp)
 		flusher.Flush()
 	}
 
@@ -50,7 +53,9 @@ func (h *SSEHandler) Stream(c *gin.Context) {
 	for {
 		select {
 		case msg := <-ch:
-			c.SSEvent("notification", msg)
+			var resp dto.SSEResponse
+			resp.FromModel(msg)
+			c.SSEvent("notification", resp)
 			flusher.Flush()
 		case <-c.Request.Context().Done():
 			return
